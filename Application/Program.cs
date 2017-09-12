@@ -9,6 +9,7 @@ namespace LogUsers
     using System.Threading;
 
     using LogTest;
+    using System.IO;
 
     class Program
     {
@@ -16,25 +17,26 @@ namespace LogUsers
         {
             ILog  logger = new AsyncLog();
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 120; i++)
             {
-                logger.Write("Number with Flush: " + i.ToString());
-                Thread.Sleep(50);
+                logger.WriteAsync("Number with Flush: " + i.ToString());
+                //Thread.Sleep(20);
             }
 
-            logger.StopWithFlush();
+            //logger.StopWithFlush();
 
             ILog logger2 = new AsyncLog();
 
-            for (int i = 50; i > 0; i--)
+            for (int i = 150; i > 0; i--)
             {
-                logger2.Write("Number with No flush: " + i.ToString());
-                Thread.Sleep(20);
+                logger2.WriteAsync("Number with No flush: " + i.ToString());
+                //Thread.Sleep(50);
             }
 
-            logger2.StopWithoutFlush();
+            //logger2.StopWithoutFlush();
 
             Console.ReadLine();
+
         }
     }
 }

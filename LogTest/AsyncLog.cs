@@ -5,6 +5,7 @@
     using System.IO;
     using System.Text;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public class AsyncLog : ILog
     {
@@ -15,26 +16,39 @@
 
         private bool _exit;
 
-        // TODO:Constructor shoudln't have logic just initializtion
-        public AsyncLog()
-        {
-            if (!Directory.Exists(@"C:\LogTest")) 
-                Directory.CreateDirectory(@"C:\LogTest");
-
-            this._writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + ".log");
-            
-            this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
-
-            this._writer.AutoFlush = true;
-
-            this._runThread = new Thread(this.MainLoop);
-            this._runThread.Start();
-        }
-
         private bool _QuitWithFlush = false;
 
-
         DateTime _curDate = DateTime.Now;
+
+        //TODO:Constructor shoudln't have logic just initializtion
+        public AsyncLog()
+        {
+            if (!Directory.Exists(@"C:\LogTest"))
+                Directory.CreateDirectory(@"C:\LogTest");
+
+            using (this._writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd") + ".log"))
+            {
+                this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
+                this._writer.AutoFlush = true;
+            }
+        }
+
+        //public AsyncLog()
+        //{
+        //    if (!Directory.Exists(@"C:\LogTest"))
+        //        Directory.CreateDirectory(@"C:\LogTest");
+
+        //    this._writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + ".log");
+
+        //    this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
+
+        //    this._writer.AutoFlush = true;
+
+        //    this._runThread = new Thread(this.MainLoop);
+        //    this._runThread.Start();
+        //}
+
+
 
         private void MainLoop()
         {
@@ -111,5 +125,22 @@
         {
             this._lines.Add(new LogLine() { Text = text, Timestamp = DateTime.Now });
         }
+
+        public async Task WriteAsync(string text)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+            stringBuilder.Append("\t");
+            stringBuilder.Append(text);
+            stringBuilder.Append("\t");
+            stringBuilder.Append(Environment.NewLine);
+
+            using (StreamWriter wr = new StreamWriter(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd") + ".log", true))
+            {
+                await wr.WriteAsync(stringBuilder.ToString());
+            }
+
+        }
+
     }
 }

@@ -20,6 +20,12 @@ namespace LogTest
         /// </summary>
         /// <param name="text">The text to written to the log</param>
         void Write(string text);
+     
+        /// <summary>
+        /// Write a message to the Log.
+        /// </summary>
+        /// <param name="text">The text to written to the log</param>
+        Task WriteAsync(string text);
 
 
     }
